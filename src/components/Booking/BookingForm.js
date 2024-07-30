@@ -1,0 +1,183 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import './BookingForm.css';
+
+const carModels = [
+    'A200', 'A200d', 'C200', 'C220d', 'C300',
+    'E200', 'E220d', 'E350d', 'S450', 'S580'
+];
+
+const BookingForm = () => {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const [date, setDate] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [carModel, setCarModel] = useState('');
+    const [username, setUsername] = useState('');
+    const [bookings, setBookings] = useState([]);
+    const [availableCars, setAvailableCars] = useState([]);
+
+    useEffect(() => {
+        const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        setBookings(savedBookings);
+
+        const now = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+        const istNow = new Date(now.getTime() + istOffset);
+
+        const formattedDate = istNow.toISOString().split('T')[0];
+        const formattedTime = istNow.toTimeString().split(' ')[0].slice(0, 5);
+
+        setDate(formattedDate);
+        setStartTime(formattedTime);
+        setEndTime(formattedTime);
+
+        const intervalId = setInterval(updateAvailability, 60000);
+        return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
+        updateAvailability();
+    }, [bookings]);
+
+    const handleBooking = (e) => {
+        e.preventDefault();
+        const newBooking = {
+            date,
+            startTime,
+            endTime,
+            carModel,
+            username,
+            salesConsultant: user,
+        };
+        const updatedBookings = [...bookings, newBooking];
+        setBookings(updatedBookings);
+        localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+        alert('Booking confirmed!');
+        updateAvailability();
+    };
+
+    const isCarAvailable = (model, date, start, end) => {
+        return bookings.every((booking) => {
+            if (booking.carModel === model && booking.date === date) {
+                return (end <= booking.startTime || start >= booking.endTime);
+            }
+            return true;
+        });
+    };
+
+    const updateAvailability = () => {
+        const available = carModels.filter((model) => {
+            return isCarAvailable(model, date, startTime, endTime);
+        });
+        setAvailableCars(available);
+    };
+
+    const handleCheckAvailability = () => {
+        updateAvailability();
+    };
+
+    const handleViewBookings = () => {
+        navigate('/booking-list');
+    };
+
+    const getMinDate = () => {
+        const now = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+        const istNow = new Date(now.getTime() + istOffset);
+        return istNow.toISOString().split('T')[0];
+    };
+
+    const getMinTime = () => {
+        const now = new Date();
+        const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+        const istNow = new Date(now.getTime() + istOffset);
+        const hours = istNow.getHours().toString().padStart(2, '0');
+        const minutes = istNow.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    };
+
+    return (
+        <div className="booking-form">
+            <h2 className="booking-form-title">Book a Test Drive</h2>
+            <form onSubmit={handleBooking} className="form-container">
+                <label>
+                    Date:
+                    <input
+                        type="date"
+                        value={date}
+                        min={getMinDate()}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                    />
+                </label>
+                <label>
+                    Start Time:
+                    <input
+                        type="time"
+                        value={startTime}
+                        min={getMinTime()}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        required
+                    />
+                </label>
+                <label>
+                    End Time:
+                    <input
+                        type="time"
+                        value={endTime}
+                        min={getMinTime()}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        required
+                    />
+                </label>
+                <label>
+                    Car Model:
+                    <select
+                        value={carModel}
+                        onChange={(e) => setCarModel(e.target.value)}
+                        required
+                    >
+                        <option value="" disabled>Select Car Model</option>
+                        {carModels.map((model) => (
+                            <option
+                                key={model}
+                                value={model}
+                                disabled={!isCarAvailable(model, date, startTime, endTime)}
+                            >
+                                {model} {!isCarAvailable(model, date, startTime, endTime) && '(Unavailable)'}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <label>
+                    Username:
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                </label>
+                <button type="submit" className="submit-btn" disabled={!user}>Book</button>
+            </form>
+            <button onClick={handleCheckAvailability} className="check-availability-btn">
+                Check Car Availability
+            </button>
+            <button onClick={handleViewBookings} className="view-bookings-btn">
+                View Bookings
+            </button>
+            <h3 className="available-cars-title">Available Cars</h3>
+            <ul className="available-cars-list">
+                {availableCars.map((model) => (
+                    <li key={model} className="available-car-item">{model}</li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+export default BookingForm;

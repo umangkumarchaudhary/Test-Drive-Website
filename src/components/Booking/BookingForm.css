@@ -1,0 +1,118 @@
+.booking-form {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f4f4f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.booking-form-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.form-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    color: #555;
+}
+
+input[type="date"],
+input[type="time"],
+select,
+input[type="text"] {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+button {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.submit-btn {
+    background-color: #28a745;
+}
+
+.submit-btn:disabled {
+    background-color: #aaa;
+}
+
+.submit-btn:not(:disabled):hover {
+    background-color: #218838;
+}
+
+.check-availability-btn {
+    background-color: #007bff;
+}
+
+.check-availability-btn:hover {
+    background-color: #0056b3;
+}
+
+.view-bookings-btn {
+    background-color: #ffc107;
+}
+
+.view-bookings-btn:hover {
+    background-color: #e0a800;
+}
+
+.available-cars-title {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.available-cars-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.available-car-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .form-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-form {
+        padding: 1rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+    }
+}
+
+

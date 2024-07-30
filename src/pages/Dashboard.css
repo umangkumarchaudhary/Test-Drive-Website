@@ -1,0 +1,123 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #210f4b;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard h2 {
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.calendar-container {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+.react-calendar {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.react-calendar__tile {
+    color: #000; /* Set date color to black */
+}
+
+.react-calendar__tile--highlighted {
+    background-color: #ffeb3b; /* Highlighted date background color */
+    color: #000; /* Ensure text color remains black on highlighted dates */
+}
+
+.react-calendar__tile--highlighted:enabled:hover {
+    background-color: #fbc02d; /* Hover color */
+    color: #000; /* Ensure text color remains black on hover */
+}
+
+.bookings-container {
+    width: 100%;
+    max-width: 800px;
+    padding: 1rem;
+    background-color: #4c09e9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bookings-container h3 {
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.booking-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.booking-item {
+    background-color: #dcd4d2;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInUp 0.5s forwards;
+}
+
+.booking-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.booking-item p {
+    margin: 0.5rem 0;
+    color: #a10707;
+}
+
+.no-bookings-message {
+    text-align: center;
+    color: #777;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 1rem;
+    }
+
+    .calendar-container {
+        max-width: 100%;
+    }
+
+    .bookings-container {
+        padding: 0.5rem;
+    }
+
+    .booking-item {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard h2, .bookings-container h3 {
+        font-size: 1.5rem;
+    }
+}

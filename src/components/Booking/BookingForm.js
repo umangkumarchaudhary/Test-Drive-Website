@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // Import useCallback
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import './BookingForm.css';
@@ -19,6 +19,14 @@ const BookingForm = () => {
     const [bookings, setBookings] = useState([]);
     const [availableCars, setAvailableCars] = useState([]);
 
+    // Use useCallback to memoize updateAvailability
+    const updateAvailability = useCallback(() => {
+        const available = carModels.filter((model) => {
+            return isCarAvailable(model, date, startTime, endTime);
+        });
+        setAvailableCars(available);
+    }, [date, startTime, endTime, bookings]); // Add dependencies here
+
     useEffect(() => {
         const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
         setBookings(savedBookings);
@@ -31,13 +39,11 @@ const BookingForm = () => {
         setStartTime(formattedTime);
         setEndTime(formattedTime);
 
+        updateAvailability(); // Ensure updateAvailability is called initially
+
         const intervalId = setInterval(updateAvailability, 60000);
         return () => clearInterval(intervalId);
-    }, []);
-
-    useEffect(() => {
-        updateAvailability();
-    }, [bookings]);
+    }, [updateAvailability]); // Add updateAvailability as dependency
 
     const handleBooking = (e) => {
         e.preventDefault();
@@ -63,13 +69,6 @@ const BookingForm = () => {
             }
             return true;
         });
-    };
-
-    const updateAvailability = () => {
-        const available = carModels.filter((model) => {
-            return isCarAvailable(model, date, startTime, endTime);
-        });
-        setAvailableCars(available);
     };
 
     const handleCheckAvailability = () => {

@@ -1,9 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './BookingList.css'; // Import CSS file for styling
 
 const BookingList = () => {
     const [bookings, setBookings] = useState([]);
     const [filteredBookings, setFilteredBookings] = useState([]);
+
+    // Use useCallback to memoize filterBookings
+    const filterBookings = useCallback((bookings) => {
+        const now = new Date();
+        const futureAndOngoingBookings = bookings.filter((booking) => {
+            const bookingStart = new Date(`${booking.date}T${booking.startTime}`);
+            const bookingEnd = new Date(`${booking.date}T${booking.endTime}`);
+            // Show bookings where the start time is in the future or the end time is in the future
+            return bookingStart >= now || (bookingStart <= now && bookingEnd >= now);
+        });
+        setFilteredBookings(futureAndOngoingBookings);
+    }, []);
 
     useEffect(() => {
         const loadBookings = () => {
@@ -13,18 +25,7 @@ const BookingList = () => {
         };
 
         loadBookings();
-    }, []);
-
-    const filterBookings = (bookings) => {
-        const now = new Date();
-        const futureAndOngoingBookings = bookings.filter((booking) => {
-            const bookingStart = new Date(`${booking.date}T${booking.startTime}`);
-            const bookingEnd = new Date(`${booking.date}T${booking.endTime}`);
-            // Show bookings where the start time is in the future or the end time is in the future
-            return bookingStart >= now || (bookingStart <= now && bookingEnd >= now);
-        });
-        setFilteredBookings(futureAndOngoingBookings);
-    };
+    }, [filterBookings]); // Add filterBookings as a dependency
 
     return (
         <div className="booking-list-container">

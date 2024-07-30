@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Import useCallback
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import './BookingForm.css';
@@ -19,14 +19,6 @@ const BookingForm = () => {
     const [bookings, setBookings] = useState([]);
     const [availableCars, setAvailableCars] = useState([]);
 
-    // Use useCallback to memoize updateAvailability
-    const updateAvailability = useCallback(() => {
-        const available = carModels.filter((model) => {
-            return isCarAvailable(model, date, startTime, endTime);
-        });
-        setAvailableCars(available);
-    }, [date, startTime, endTime, bookings]); // Add dependencies here
-
     useEffect(() => {
         const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
         setBookings(savedBookings);
@@ -39,11 +31,13 @@ const BookingForm = () => {
         setStartTime(formattedTime);
         setEndTime(formattedTime);
 
-        updateAvailability(); // Ensure updateAvailability is called initially
-
         const intervalId = setInterval(updateAvailability, 60000);
         return () => clearInterval(intervalId);
-    }, [updateAvailability]); // Add updateAvailability as dependency
+    }, []);
+
+    useEffect(() => {
+        updateAvailability();
+    }, [bookings]);
 
     const handleBooking = (e) => {
         e.preventDefault();
@@ -71,6 +65,13 @@ const BookingForm = () => {
         });
     };
 
+    const updateAvailability = () => {
+        const available = carModels.filter((model) => {
+            return isCarAvailable(model, date, startTime, endTime);
+        });
+        setAvailableCars(available);
+    };
+
     const handleCheckAvailability = () => {
         updateAvailability();
     };
@@ -86,9 +87,12 @@ const BookingForm = () => {
 
     const getMinTime = () => {
         const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
+        if (date === now.toISOString().split('T')[0]) {
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        return '00:00'; // Allow any time for future dates
     };
 
     return (

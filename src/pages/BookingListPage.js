@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './BookingList.css'; // Import CSS file for styling
 
 const BookingList = () => {
-    const [bookings, setBookings] = useState([]);
     const [filteredBookings, setFilteredBookings] = useState([]);
 
     // Use useCallback to memoize filterBookings
@@ -20,7 +19,6 @@ const BookingList = () => {
     useEffect(() => {
         const loadBookings = () => {
             const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
-            setBookings(savedBookings);
             filterBookings(savedBookings);
         };
 

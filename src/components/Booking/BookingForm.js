@@ -19,6 +19,23 @@ const BookingForm = () => {
     const [bookings, setBookings] = useState([]);
     const [availableCars, setAvailableCars] = useState([]);
 
+    // Define the function before using it
+    const updateAvailability = () => {
+        const available = carModels.filter((model) => {
+            return isCarAvailable(model, date, startTime, endTime);
+        });
+        setAvailableCars(available);
+    };
+
+    const isCarAvailable = (model, date, start, end) => {
+        return bookings.every((booking) => {
+            if (booking.carModel === model && booking.date === date) {
+                return (end <= booking.startTime || start >= booking.endTime);
+            }
+            return true;
+        });
+    };
+
     useEffect(() => {
         const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
         setBookings(savedBookings);
@@ -31,6 +48,7 @@ const BookingForm = () => {
         setStartTime(formattedTime);
         setEndTime(formattedTime);
 
+        // Set interval after the function is defined
         const intervalId = setInterval(updateAvailability, 60000);
         return () => clearInterval(intervalId);
     }, []);
@@ -56,22 +74,6 @@ const BookingForm = () => {
         updateAvailability();
     };
 
-    const isCarAvailable = (model, date, start, end) => {
-        return bookings.every((booking) => {
-            if (booking.carModel === model && booking.date === date) {
-                return (end <= booking.startTime || start >= booking.endTime);
-            }
-            return true;
-        });
-    };
-
-    const updateAvailability = () => {
-        const available = carModels.filter((model) => {
-            return isCarAvailable(model, date, startTime, endTime);
-        });
-        setAvailableCars(available);
-    };
-
     const handleCheckAvailability = () => {
         updateAvailability();
     };
@@ -87,12 +89,9 @@ const BookingForm = () => {
 
     const getMinTime = () => {
         const now = new Date();
-        if (date === now.toISOString().split('T')[0]) {
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            return `${hours}:${minutes}`;
-        }
-        return '00:00'; // Allow any time for future dates
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
     };
 
     return (

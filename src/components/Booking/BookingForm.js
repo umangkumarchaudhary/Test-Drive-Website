@@ -19,7 +19,6 @@ const BookingForm = () => {
     const [bookings, setBookings] = useState([]);
     const [availableCars, setAvailableCars] = useState([]);
 
-    // Define the function before using it
     const updateAvailability = () => {
         const available = carModels.filter((model) => {
             return isCarAvailable(model, date, startTime, endTime);
@@ -48,7 +47,6 @@ const BookingForm = () => {
         setStartTime(formattedTime);
         setEndTime(formattedTime);
 
-        // Set interval after the function is defined
         const intervalId = setInterval(updateAvailability, 60000);
         return () => clearInterval(intervalId);
     }, []);
@@ -80,6 +78,27 @@ const BookingForm = () => {
 
     const handleViewBookings = () => {
         navigate('/booking-list');
+    };
+
+    const handleCancelBooking = (index) => {
+        const updatedBookings = bookings.filter((_, i) => i !== index);
+        setBookings(updatedBookings);
+        localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+        alert('Booking canceled!');
+        updateAvailability();
+    };
+
+    const handleExtendBooking = (index, newEndTime) => {
+        const updatedBookings = bookings.map((booking, i) => {
+            if (i === index) {
+                return { ...booking, endTime: newEndTime };
+            }
+            return booking;
+        });
+        setBookings(updatedBookings);
+        localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+        alert('Booking extended!');
+        updateAvailability();
     };
 
     const getMinDate = () => {
@@ -169,6 +188,27 @@ const BookingForm = () => {
             <ul className="available-cars-list">
                 {availableCars.map((model) => (
                     <li key={model} className="available-car-item">{model}</li>
+                ))}
+            </ul>
+            <h3 className="bookings-title">Current Bookings</h3>
+            <ul className="bookings-list">
+                {bookings.map((booking, index) => (
+                    <li key={index} className="booking-item">
+                        <div className="booking-details">
+                            <p><strong>Date:</strong> {booking.date}</p>
+                            <p><strong>Start Time:</strong> {booking.startTime}</p>
+                            <p><strong>End Time:</strong> {booking.endTime}</p>
+                            <p><strong>Car Model:</strong> {booking.carModel}</p>
+                            <p><strong>Username:</strong> {booking.username}</p>
+                            <p><strong>Sales Consultant:</strong> {booking.salesConsultant}</p>
+                        </div>
+                        <button onClick={() => handleCancelBooking(index)} className="cancel-booking-btn">
+                            Cancel Booking
+                        </button>
+                        <button onClick={() => handleExtendBooking(index, prompt('Enter new end time:'))} className="extend-booking-btn">
+                            Extend Booking
+                        </button>
+                    </li>
                 ))}
             </ul>
         </div>

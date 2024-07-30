@@ -78,6 +78,22 @@ button {
     background-color: #e0a800;
 }
 
+.cancel-booking-btn {
+    background-color: #dc3545;
+}
+
+.cancel-booking-btn:hover {
+    background-color: #c82333;
+}
+
+.extend-booking-btn {
+    background-color: #17a2b8;
+}
+
+.extend-booking-btn:hover {
+    background-color: #138496;
+}
+
 .available-cars-title {
     margin-top: 2rem;
     font-size: 1.5rem;
@@ -99,6 +115,31 @@ button {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.bookings-title {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.bookings-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.booking-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.booking-details {
+    margin-bottom: 1rem;
+}
+
 @media (min-width: 768px) {
     .form-container {
         grid-template-columns: repeat(2, 1fr);
@@ -114,5 +155,3 @@ button {
         font-size: 0.9rem;
     }
 }
-
-

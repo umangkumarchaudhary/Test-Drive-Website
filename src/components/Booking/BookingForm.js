@@ -24,11 +24,8 @@ const BookingForm = () => {
         setBookings(savedBookings);
 
         const now = new Date();
-        const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-        const istNow = new Date(now.getTime() + istOffset);
-
-        const formattedDate = istNow.toISOString().split('T')[0];
-        const formattedTime = istNow.toTimeString().split(' ')[0].slice(0, 5);
+        const formattedDate = now.toISOString().split('T')[0];
+        const formattedTime = now.toTimeString().split(' ')[0].slice(0, 5);
 
         setDate(formattedDate);
         setStartTime(formattedTime);
@@ -85,17 +82,13 @@ const BookingForm = () => {
 
     const getMinDate = () => {
         const now = new Date();
-        const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-        const istNow = new Date(now.getTime() + istOffset);
-        return istNow.toISOString().split('T')[0];
+        return now.toISOString().split('T')[0];
     };
 
     const getMinTime = () => {
         const now = new Date();
-        const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-        const istNow = new Date(now.getTime() + istOffset);
-        const hours = istNow.getHours().toString().padStart(2, '0');
-        const minutes = istNow.getMinutes().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     };
 

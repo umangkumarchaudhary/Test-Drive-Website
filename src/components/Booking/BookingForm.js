@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import './BookingForm.css';
@@ -19,38 +19,41 @@ const BookingForm = () => {
     const [bookings, setBookings] = useState([]);
     const [availableCars, setAvailableCars] = useState([]);
 
-    useEffect(() => {
-        const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
-        setBookings(savedBookings);
+    const updateAvailability = () => {
+        const available = carModels.filter((model) => {
+            return isCarAvailable(model, date, startTime, endTime);
+        });
+        setAvailableCars(available);
+    };
 
-        const now = new Date();
-        const formattedDate = now.toISOString().split('T')[0];
-        setDate(formattedDate);
-
-        const formattedTime = now.toTimeString().slice(0, 5);
-        setStartTime(formattedTime);
-        setEndTime(formattedTime);
-    }, []);
-
-    const isCarAvailable = useCallback((model, date, start, end) => {
+    const isCarAvailable = (model, date, start, end) => {
         return bookings.every((booking) => {
             if (booking.carModel === model && booking.date === date) {
                 return (end <= booking.startTime || start >= booking.endTime);
             }
             return true;
         });
-    }, [bookings]);
+    };
 
-    const updateAvailability = useCallback(() => {
-        const available = carModels.filter((model) => {
-            return isCarAvailable(model, date, startTime, endTime);
-        });
-        setAvailableCars(available);
-    }, [date, startTime, endTime, isCarAvailable]);
+    useEffect(() => {
+        const savedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        setBookings(savedBookings);
+
+        const now = new Date();
+        const formattedDate = now.toISOString().split('T')[0];
+        const formattedTime = now.toTimeString().split(' ')[0].slice(0, 5);
+
+        setDate(formattedDate);
+        setStartTime(formattedTime);
+        setEndTime(formattedTime);
+
+        const intervalId = setInterval(updateAvailability, 60000);
+        return () => clearInterval(intervalId);
+    }, []);
 
     useEffect(() => {
         updateAvailability();
-    }, [bookings, updateAvailability]);
+    }, [bookings]);
 
     const handleBooking = (e) => {
         e.preventDefault();
@@ -129,6 +132,7 @@ const BookingForm = () => {
                     <input
                         type="time"
                         value={startTime}
+                        min={getMinTime()}
                         onChange={(e) => setStartTime(e.target.value)}
                         required
                     />
@@ -138,6 +142,7 @@ const BookingForm = () => {
                     <input
                         type="time"
                         value={endTime}
+                        min={getMinTime()}
                         onChange={(e) => setEndTime(e.target.value)}
                         required
                     />
